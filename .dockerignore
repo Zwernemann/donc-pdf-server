@@ -1,0 +1,15 @@
+# .dockerignore
+
+node_modules
+npm-debug.log
+dist
+*.md
+*.log
+*.zip
+.env
+test*
+.DS_Store
+.git
+.gitignore
+Dockerfile
+.dockerignore
