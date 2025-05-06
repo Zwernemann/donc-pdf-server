@@ -2,7 +2,7 @@ name: Deploy to AWS App Runner
 
 on:
   push:
-    branches: [master]  # angepasst für deinen Branch
+    branches: [main]  # angepasst für deinen Branch
 
 jobs:
   deploy:
