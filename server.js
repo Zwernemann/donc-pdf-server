@@ -16,13 +16,21 @@ app.use(bodyParser.json({ limit: '10mb' }));
 const templateHtml = fs.readFileSync(path.join(__dirname, 'template', 'donc-template.html'), 'utf8');
 const compileTemplate = handlebars.compile(templateHtml);
 
+// Determine if we're on Windows
+const isWindows = process.platform === 'win32';
+
 // PDF generation route
 app.post('/generate-donc', async (req, res) => {
   try {
     const data = req.body;
     const html = compileTemplate(data);
 
-    const browser = await puppeteer.launch({executablePath: '/usr/bin/google-chrome',  headless: 'new',  args: ['--no-sandbox', '--disable-setuid-sandbox']});
+    const browser = await puppeteer.launch({
+      executablePath: isWindows ? undefined : '/usr/bin/google-chrome',
+      headless: 'new',
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'networkidle0' });
 
