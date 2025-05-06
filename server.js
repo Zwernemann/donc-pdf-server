@@ -26,7 +26,6 @@ app.post('/generate-donc', async (req, res) => {
     const html = compileTemplate(data);
 
     const browser = await puppeteer.launch({
-      executablePath: isWindows ? undefined : undefined,
       headless: 'new',
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
