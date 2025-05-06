@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Dekontaminationserklärung / Declaration of Decontamination</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 10pt;
+      margin: 40px;
+    }
+    .logo {
+      height: 40px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: 14pt;
+      margin-top: 0;
+    }
+    .section {
+      margin-top: 20px;
+    }
+    .checkbox {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border: 1px solid #000;
+      text-align: center;
+      font-weight: bold;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    td, th {
+      border: 1px solid #ccc;
+      padding: 5px;
+      font-size: 9pt;
+    }
+    .page-break {
+      page-break-before: always;
+    }
+  </style>
+</head>
+<body>
+  <img src="{{logoUrl}}" class="logo" alt="E+H Logo">
+
+  <h1>Dekontaminationserklärung / Declaration of Decontamination</h1>
+
+  <p>
+    Aufgrund der gesetzlichen Vorschriften und zum Schutz unserer Mitarbeiter und Betriebseinrichtungen benötigen wir die unterschriebene
+    „Dekontaminationserklärung“, bevor Ihr Auftrag bearbeitet werden kann.<br>
+    <em>In accordance with legal requirements and to protect our employees and facilities, we require the signed “Declaration of Decontamination” before processing your order.</em>
+  </p>
+
+  <p><strong>RMA Nummer / RMA Number:</strong> {{rmaNumber}}</p>
+  <p><strong>Vorgangsnummer / Process Number:</strong> {{returnOrderNumber}}</p>
+
+  <div class="section">
+    <p><strong>Geräte-/Sensortyp / Type of Instrument/Sensor:</strong> {{asset.type}}</p>
+    <p><strong>Seriennummer / Serial Number:</strong> {{asset.serialNumber}}</p>
+    <p>
+      <span class="checkbox">{{#if asset.usedAsSIL}}X{{/if}}</span>
+      Einsatz als SIL-Gerät / Used as SIL device<br>
+      <span class="checkbox">{{#if asset.neverUsed}}X{{/if}}</span>
+      Gerät war nicht im Einsatz / Device was not in use
+    </p>
+  </div>
+
+  <div class="section">
+    <h3>Prozessdaten / Process Data</h3>
+    <table>
+      <tr>
+        <td>Temperatur / Temperature</td>
+        <td>{{donc.temperature}} &deg;{{donc.temperatureUnit}}</td>
+        <td>Druck / Pressure</td>
+        <td>{{donc.pressure}} {{donc.pressureUnit}}</td>
+      </tr>
+      <tr>
+        <td>Leitfähigkeit / Conductivity</td>
+        <td>{{donc.conductivity}} {{donc.conductivityUnit}}</td>
+        <td>Viskosität / Viscosity</td>
+        <td>{{donc.viscosity}} mm²/s</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h3>Medium und Warnhinweise / Medium and Warnings</h3>
+    <table>
+      <tr>
+        <th>Medium (CAS-Nr.)+Konz<br>Medium (CAS No.)+ conc.</th>
+        <th>Entzündlich<br>Flammable</th>
+        <th>Giftig<br>Toxic</th>
+        <th>Ätzend<br>Corrosive</th>
+        <th>Gesundheitsschädlich<br>Harmful</th>
+        <th>Unbedenklich<br>Harmless</th>
+        <th>Sonstiges*<br>Others*</th>
+      </tr>
+      {{#each donc.mediums}}
+      <tr>
+        <td>{{this.name}}</td>
+        <td>{{#if this.flammable}}X{{/if}}</td>
+        <td>{{#if this.toxic}}X{{/if}}</td>
+        <td>{{#if this.corrosive}}X{{/if}}</td>
+        <td>{{#if this.harmful}}X{{/if}}</td>
+        <td>{{#if this.harmless}}X{{/if}}</td>
+        <td>{{this.others}}</td>
+      </tr>
+      {{/each}}
+    </table>
+  </div>
+
+  <div class="section">
+    <h3>Fehlerbeschreibung / Description of Error</h3>
+    <p>{{donc.errorDescription}}</p>
+  </div>
+
+  <div class="section">
+    <h3>Angaben zum Gerätebesitzer / Device Owner Info</h3>
+    <p>Firma / Company: {{account.name}}</p>
+    <p>Ansprechpartner / Contact: {{contact.name}}</p>
+    <p>E-Mail: {{contact.email}}</p>
+  </div>
+
+  <div class="section">
+    <p>
+      Ich bestätige, dass die zurückgesandten Teile gründlich gereinigt wurden. Diese sind nach bestem Wissen und Gewissen frei von Rückständen in gefahrenbringender Menge.<br>
+      <em>I confirm that the returned parts have been thoroughly cleaned and are free from hazardous residue to the best of my knowledge and belief.</em>
+    </p>
+    <p>Ort, Datum / Place, Date: ____________________________</p>
+    <p>Unterschrift / Signature: ____________________________</p>
+  </div>
+</body>
+</html>
