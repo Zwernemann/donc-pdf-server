@@ -1,0 +1,30 @@
+name: Deploy to AWS App Runner
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Build & Deploy Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to Amazon ECR (optional if using ECR)
+        if: false  # remove if using ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker image
+        run: |
+          docker build -t donc-pdf-server .
+
+      - name: Deploy to App Runner (manual step required)
+        run: |
+          echo "Login to AWS Console and connect this repo to App Runner. This action builds the image only."
+          echo "You can configure auto-deployment from GitHub in App Runner UI."
