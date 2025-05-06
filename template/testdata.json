@@ -1,0 +1,39 @@
+{
+  "rmaNumber": "RMA-12345",
+  "returnOrderNumber": "RO-67890",
+  "asset": {
+    "type": "Deltabar FMD77654",
+    "serialNumber": "SNR-998877",
+    "usedAsSIL": true,
+    "neverUsed": false
+  },
+  "donc": {
+    "temperature": 75,
+    "temperatureUnit": "C",
+    "pressure": 980,
+    "pressureUnit": "hPa",
+    "conductivity": 12.4,
+    "conductivityUnit": "μs/cm",
+    "viscosity": 1.2,
+    "mediums": [
+      {
+        "name": "Ethanol (64-17-5)",
+        "flammable": true,
+        "toxic": false,
+        "corrosive": false,
+        "harmful": false,
+        "harmless": true,
+        "others": ""
+      }
+    ],
+    "errorDescription": "Kein Signal unter Prozessbedingungen"
+  },
+  "contact": {
+    "name": "Max Mustermann",
+    "email": "max@example.com"
+  },
+  "account": {
+    "name": "Musterfirma GmbH"
+  },
+  "logoUrl": "https://www.endress.com/images/logo/EH_Logo-d9672165.svg"
+}
