@@ -1,16 +1,16 @@
 {
   "name": "donc-pdf-server",
   "version": "1.0.0",
-  "description": "PDF generator for Declaration of Decontamination",
+  "description": "PDF generator for Declaration of Decontamination (DONC)",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "PUPPETEER_SKIP_DOWNLOAD=true node server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
-    "puppeteer": "^21.3.8",
     "body-parser": "^1.20.2",
-    "handlebars": "^4.7.8"
+    "handlebars": "^4.7.8",
+    "puppeteer": "^21.3.8"
   },
   "puppeteer": {
     "skip_chromium_download": true
