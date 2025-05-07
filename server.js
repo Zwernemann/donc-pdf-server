@@ -58,13 +58,17 @@ app.post('/generate/:templateName', async (req, res) => {
   const { templateName } = req.params;
   const data = req.body;
 
-  const htmlPath = path.join(TEMPLATE_ROOT, templateName, `${templateName}.html`);
+  const dirPath = path.join(TEMPLATE_ROOT, templateName);
 
   try {
-    if (!fs.existsSync(htmlPath)) {
-      return res.status(404).send('Template not found');
+    const files = await fs.promises.readdir(dirPath);
+    const htmlFile = files.find(f => f.endsWith('.html'));
+
+    if (!htmlFile) {
+      return res.status(404).send('No HTML file found in template directory');
     }
 
+    const htmlPath = path.join(dirPath, htmlFile);
     const templateHtml = fs.readFileSync(htmlPath, 'utf8');
     const compile = handlebars.compile(templateHtml);
     const html = compile(data);
@@ -90,6 +94,7 @@ app.post('/generate/:templateName', async (req, res) => {
     res.status(500).send('PDF generation failed');
   }
 });
+
 
 // Upload API for template ZIP files
 const upload = multer({ dest: 'tmp/' });
