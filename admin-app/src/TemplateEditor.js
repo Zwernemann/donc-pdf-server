@@ -1,17 +1,23 @@
-import React, { useEffect } from 'react';
 import grapesjs from 'grapesjs';
 import 'grapesjs/dist/css/grapes.min.css';
 
-export default function TemplateEditor() {
-  useEffect(() => {
-    grapesjs.init({
-      container: '#gjs',
-      fromElement: true,
-      height: '100vh',
-      width: 'auto',
-      storageManager: false,
-    });
-  }, []);
+import presetWebpage from 'grapesjs-preset-webpage';
+import pluginForms from 'grapesjs-plugin-forms';
+
+useEffect(() => {
+  grapesjs.init({
+    container: '#gjs',
+    fromElement: false,
+    height: '100vh',
+    width: 'auto',
+    storageManager: false,
+    plugins: [presetWebpage, pluginForms],
+    pluginsOpts: {
+      [presetWebpage]: {},
+      [pluginForms]: {}
+    }
+  });
+}, []);
 
   return (
     <div className="bg-white">
