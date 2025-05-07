@@ -21,7 +21,7 @@ useEffect(() => {
 
   return (
     <div className="bg-white">
-      <div id="gjs">
+      <div id="gjs" className="bg-white border h-full">
         <h1>Start your template here</h1>
         <p>Drag and drop components from the sidebar</p>
       </div>
