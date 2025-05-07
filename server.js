@@ -12,6 +12,9 @@ const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json({ limit: '10mb' }));
 
+const adminRoutes = require('./admin');
+app.use('/admin', adminRoutes);
+
 // Compile the Handlebars template once on server start
 const templateHtml = fs.readFileSync(path.join(__dirname, 'template', 'donc-template.html'), 'utf8');
 const compileTemplate = handlebars.compile(templateHtml);
