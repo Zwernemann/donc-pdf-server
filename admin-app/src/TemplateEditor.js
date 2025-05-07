@@ -4,17 +4,22 @@ import 'grapesjs/dist/css/grapes.min.css';
 import presetWebpage from 'grapesjs-preset-webpage';
 import pluginForms from 'grapesjs-plugin-forms';
 
+import parserPostCSS from 'grapesjs-parser-postcss';
+
 useEffect(() => {
   grapesjs.init({
     container: '#gjs',
-    fromElement: false,
     height: '100vh',
     width: 'auto',
+    fromElement: false,
+    components: '',
+    style: '',
     storageManager: false,
-    plugins: [presetWebpage, pluginForms],
+    plugins: [presetWebpage, pluginForms, parserPostCSS],
     pluginsOpts: {
       [presetWebpage]: {},
-      [pluginForms]: {}
+      [pluginForms]: {},
+      [parserPostCSS]: {}
     }
   });
 }, []);
