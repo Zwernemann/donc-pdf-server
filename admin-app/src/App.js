@@ -18,13 +18,20 @@ export default function App() {
   };
 
   return (
-    <div>
-      <h1>PDF Template Test</h1>
+    <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+      <h1>Admin-Oberfläche</h1>
+
+      <h2>PDF Template Test</h2>
       <label>Template name: <input value={template} onChange={e => setTemplate(e.target.value)} /></label>
       <br />
       <textarea rows="20" cols="80" value={json} onChange={e => setJson(e.target.value)} />
       <br />
       <button onClick={handleGenerate}>Generate PDF</button>
+
+      <hr />
+
+      <h2>Template Upload</h2>
+      <UploadForm />
     </div>
   );
 }
