@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./App.css";
+import UploadForm from './UploadForm';
 
 export default function App() {
   const [template, setTemplate] = useState("");
