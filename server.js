@@ -8,6 +8,7 @@ const fsExtra = require('fs-extra');
 const path = require('path');
 const multer = require('multer');
 const handlebars = require('handlebars');
+const upload = multer({ dest: 'tmp/' }); 
 
 const app = express();
 const PORT = process.env.PORT || 3000;
