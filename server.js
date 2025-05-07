@@ -53,23 +53,20 @@ app.post('/generate-donc', async (req, res) => {
   }
 });
 
-// Dynamische PDF-Generierung auf Basis von Template-Namen
+// POST /generate/:templateName → dynamischer PDF-Generator
 app.post('/generate/:templateName', async (req, res) => {
   const { templateName } = req.params;
   const data = req.body;
-
   const dirPath = path.join(TEMPLATE_ROOT, templateName);
 
   try {
     const files = await fs.promises.readdir(dirPath);
+    console.log('Verzeichnisinhalt:', files);
+
     const htmlFile = files.find(f => f.endsWith('.html'));
+    if (!htmlFile) return res.status(404).send('No HTML file found in template directory');
 
-    if (!htmlFile) {
-      return res.status(404).send('No HTML file found in template directory');
-    }
-
-    const htmlPath = path.join(dirPath, htmlFile);
-    const templateHtml = fs.readFileSync(htmlPath, 'utf8');
+    const templateHtml = fs.readFileSync(path.join(dirPath, htmlFile), 'utf8');
     const compile = handlebars.compile(templateHtml);
     const html = compile(data);
 
@@ -90,15 +87,14 @@ app.post('/generate/:templateName', async (req, res) => {
     });
     res.send(pdfBuffer);
   } catch (err) {
-    console.error(`PDF generation for template '${templateName}' failed:`, err);
+    console.error('PDF generation failed:', err);
     res.status(500).send('PDF generation failed');
   }
 });
 
 
-// Upload API for template ZIP files
-const upload = multer({ dest: 'tmp/' });
 
+// Upload API for template ZIP files
 app.post('/api/upload-template', upload.single('templateZip'), async (req, res) => {
   const file = req.file;
   const templateName = req.body.templateName;
@@ -111,10 +107,13 @@ app.post('/api/upload-template', upload.single('templateZip'), async (req, res) 
 
   try {
     await fsExtra.ensureDir(extractPath);
-    await fsExtra.move(file.path, path.join(extractPath, file.originalname), { overwrite: true });
+    const zip = new AdmZip(file.path);
+    zip.extractAllTo(extractPath, true);
+    await fsExtra.remove(file.path);
+
     res.status(200).json({ status: 'uploaded', path: `/templates/${templateName}` });
   } catch (err) {
-    console.error(err);
+    console.error('Upload failed:', err);
     res.status(500).json({ error: 'Upload failed' });
   }
 });
