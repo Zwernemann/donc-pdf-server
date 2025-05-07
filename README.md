@@ -1,6 +1,6 @@
-# 🧾 DONC PDF-Server – Monorepo für Node.js + React-Admin
+# 🧾 PDF-Server – Monorepo für Node.js + React-Admin
 
-Dieses Projekt stellt eine API-basierte Plattform zur PDF-Generierung für verschiedene Report-Typen (wie "Declaration of Decontamination") bereit. Es kombiniert einen Express-Server mit einer React-basierten Admin-Oberfläche – alles in einem Repository für einfache Deploys.
+Dieses Projekt stellt eine API-basierte Plattform zur PDF-Generierung für verschiedene Report-Typen bereit. Es kombiniert einen Express-Server mit einer React-basierten Admin-Oberfläche – alles in einem Repository für einfache Deploys.
 
 ---
 
