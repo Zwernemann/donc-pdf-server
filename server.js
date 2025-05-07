@@ -78,6 +78,18 @@ app.post('/api/upload-template', upload.single('templateZip'), async (req, res) 
   }
 });
 
+// Template-Browser API
+app.get('/api/templates', async (req, res) => {
+  try {
+    const dirs = await fs.promises.readdir(TEMPLATE_ROOT, { withFileTypes: true });
+    const folders = dirs.filter(d => d.isDirectory()).map(d => d.name);
+    res.json(folders);
+  } catch (err) {
+    console.error('Fehler beim Lesen des Templates-Verzeichnisses:', err);
+    res.status(500).json({ error: 'Fehler beim Lesen der Template-Liste' });
+  }
+});
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`PDF generation server running on port ${PORT}`);
