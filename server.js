@@ -4,13 +4,16 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const puppeteer = require('puppeteer');
 const fs = require('fs');
+const fsExtra = require('fs-extra');
 const path = require('path');
+const multer = require('multer');
 const handlebars = require('handlebars');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const adminRoutes = require('./admin');
 app.use('/admin', adminRoutes);
@@ -48,6 +51,30 @@ app.post('/generate-donc', async (req, res) => {
   } catch (err) {
     console.error('PDF generation failed:', err);
     res.status(500).send('Internal Server Error');
+  }
+});
+
+// Upload API for template ZIP files
+const upload = multer({ dest: 'tmp/' });
+const TEMPLATE_ROOT = path.join(__dirname, 'templates');
+
+app.post('/api/upload-template', upload.single('templateZip'), async (req, res) => {
+  const file = req.file;
+  const templateName = req.body.templateName;
+
+  if (!file || !templateName) {
+    return res.status(400).json({ error: 'templateZip and templateName required' });
+  }
+
+  const extractPath = path.join(TEMPLATE_ROOT, templateName);
+
+  try {
+    await fsExtra.ensureDir(extractPath);
+    await fsExtra.move(file.path, path.join(extractPath, file.originalname), { overwrite: true });
+    res.status(200).json({ status: 'uploaded', path: `/templates/${templateName}` });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Upload failed' });
   }
 });
 
