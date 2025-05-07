@@ -18,18 +18,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const adminRoutes = require('./admin');
 app.use('/admin', adminRoutes);
 
-// Compile the Handlebars template once on server start
-const templateHtml = fs.readFileSync(path.join(__dirname, 'template', 'donc-template.html'), 'utf8');
-const compileTemplate = handlebars.compile(templateHtml);
+// Template-Verzeichnis
+const TEMPLATE_ROOT = path.join(__dirname, 'templates');
 
-// Determine if we're on Windows
-const isWindows = process.platform === 'win32';
+// PDF generation route (festes Template donc-template.html)
+const doncTemplateHtml = fs.readFileSync(path.join(__dirname, 'template', 'donc-template.html'), 'utf8');
+const compileDoncTemplate = handlebars.compile(doncTemplateHtml);
 
-// PDF generation route
 app.post('/generate-donc', async (req, res) => {
   try {
     const data = req.body;
-    const html = compileTemplate(data);
+    const html = compileDoncTemplate(data);
 
     const browser = await puppeteer.launch({
       headless: 'new',
@@ -54,9 +53,46 @@ app.post('/generate-donc', async (req, res) => {
   }
 });
 
+// Dynamische PDF-Generierung auf Basis von Template-Namen
+app.post('/generate/:templateName', async (req, res) => {
+  const { templateName } = req.params;
+  const data = req.body;
+
+  const htmlPath = path.join(TEMPLATE_ROOT, templateName, `${templateName}.html`);
+
+  try {
+    if (!fs.existsSync(htmlPath)) {
+      return res.status(404).send('Template not found');
+    }
+
+    const templateHtml = fs.readFileSync(htmlPath, 'utf8');
+    const compile = handlebars.compile(templateHtml);
+    const html = compile(data);
+
+    const browser = await puppeteer.launch({
+      headless: 'new',
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: 'networkidle0' });
+
+    const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
+    await browser.close();
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `inline; filename="${templateName}.pdf"`
+    });
+    res.send(pdfBuffer);
+  } catch (err) {
+    console.error(`PDF generation for template '${templateName}' failed:`, err);
+    res.status(500).send('PDF generation failed');
+  }
+});
+
 // Upload API for template ZIP files
 const upload = multer({ dest: 'tmp/' });
-const TEMPLATE_ROOT = path.join(__dirname, 'templates');
 
 app.post('/api/upload-template', upload.single('templateZip'), async (req, res) => {
   const file = req.file;
