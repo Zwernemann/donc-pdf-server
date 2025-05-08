@@ -72,7 +72,8 @@ const templateHtml = fs.readFileSync(path.join(dirPath, htmlFile), 'utf8');
 const compile = handlebars.compile(templateHtml);
 const html = compile(data);
 
-const htmlWithEmbeddedImages = await embedImagesAsBase64(html, dirPath);
+const htmlWithFonts = await embedFontsAsBase64(html);
+const htmlWithEmbeddedImages = await embedImagesAsBase64(htmlWithFonts, dirPath);
 
 const browser = await puppeteer.launch({
   headless: 'new',
@@ -152,6 +153,52 @@ async function embedImagesAsBase64(html, dirPath) {
     }
   });
 }
+
+const fs = require('fs');
+const path = require('path');
+const mime = require('mime-types');
+
+/**
+ * Ersetzt {{{embeddedFontFace}}} im HTML durch eingebettete @font-face-Styles aus dem festen Verzeichnis './Fonts'
+ * @param {string} html - Das bereits gerenderte HTML
+ * @returns {Promise<string>} - HTML mit eingebetteten Fonts
+ */
+async function embedFontsAsBase64(html) {
+  const fontsDir = path.join(__dirname, 'Fonts'); // fest definiert
+  let fontFiles = [];
+
+  try {
+    fontFiles = (await fs.promises.readdir(fontsDir))
+      .filter(f => f.match(/\.(ttf|woff2?|otf)$/i));
+  } catch (err) {
+    console.warn('Fonts directory not found or unreadable:', fontsDir);
+    return html.replace('{{{embeddedFontFace}}}', '');
+  }
+
+  if (fontFiles.length === 0) return html.replace('{{{embeddedFontFace}}}', '');
+
+  const styles = await Promise.all(
+    fontFiles.map(async (filename) => {
+      const fullPath = path.join(fontsDir, filename);
+      const fontData = await fs.promises.readFile(fullPath);
+      const base64 = fontData.toString('base64');
+      const mimeType = mime.lookup(fullPath) || 'font/ttf';
+      const fontName = path.parse(filename).name;
+
+      return `
+@font-face {
+  font-family: '${fontName}';
+  src: url('data:${mimeType};base64,${base64}') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}`;
+    })
+  );
+
+  const fontStyleBlock = `<style>\n${styles.join('\n')}\n</style>`;
+  return html.replace('{{{embeddedFontFace}}}', fontStyleBlock);
+}
+
 
 // Start the server
 app.listen(PORT, () => {
