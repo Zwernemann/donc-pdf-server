@@ -162,7 +162,7 @@ async function embedImagesAsBase64(html, dirPath) {
  * @returns {Promise<string>} - HTML mit eingebetteten Fonts
  */
 async function embedFontsAsBase64(html) {
-  const fontsDir = path.join(__dirname, 'Fonts'); // fest definiert
+  const fontsDir = path.join(__dirname, 'fonts'); // fest definiert
   let fontFiles = [];
 
   try {
