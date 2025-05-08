@@ -74,7 +74,7 @@ const html = compile(data);
 
 const htmlWithFonts = await embedFontsAsBase64(html);
 const htmlWithEmbeddedImages = await embedImagesAsBase64(htmlWithFonts, dirPath);
-
+console.log('Fertiges HTML:', htmlWithEmbeddedImages);
 const browser = await puppeteer.launch({
   headless: 'new',
   args: ['--no-sandbox', '--disable-setuid-sandbox']
