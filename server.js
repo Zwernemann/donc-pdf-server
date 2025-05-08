@@ -154,9 +154,7 @@ async function embedImagesAsBase64(html, dirPath) {
   });
 }
 
-const fs = require('fs');
-const path = require('path');
-const mime = require('mime-types');
+
 
 /**
  * Ersetzt {{{embeddedFontFace}}} im HTML durch eingebettete @font-face-Styles aus dem festen Verzeichnis './Fonts'
