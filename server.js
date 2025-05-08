@@ -10,7 +10,7 @@ const multer = require('multer');
 const handlebars = require('handlebars');
 const upload = multer({ dest: 'tmp/' }); 
 const AdmZip = require('adm-zip');
-
+const mime = require('mime-types'); 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -68,19 +68,22 @@ app.post('/generate/:templateName', async (req, res) => {
     const htmlFile = files.find(f => f.endsWith('.html'));
     if (!htmlFile) return res.status(404).send('No HTML file found in template directory');
 
-    const templateHtml = fs.readFileSync(path.join(dirPath, htmlFile), 'utf8');
-    const compile = handlebars.compile(templateHtml);
-    const html = compile(data);
+const templateHtml = fs.readFileSync(path.join(dirPath, htmlFile), 'utf8');
+const compile = handlebars.compile(templateHtml);
+const html = compile(data);
 
-    const browser = await puppeteer.launch({
-      headless: 'new',
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
+const htmlWithEmbeddedImages = await embedImagesAsBase64(html, dirPath);
 
-    const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: 'networkidle0' });
+const browser = await puppeteer.launch({
+  headless: 'new',
+  args: ['--no-sandbox', '--disable-setuid-sandbox']
+});
 
-    const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
+const page = await browser.newPage();
+await page.setContent(htmlWithEmbeddedImages, { waitUntil: 'networkidle0' });
+
+const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
+    
     await browser.close();
 
     res.set({
@@ -131,6 +134,24 @@ app.get('/api/templates', async (req, res) => {
     res.status(500).json({ error: 'Fehler beim Lesen der Template-Liste' });
   }
 });
+
+async function embedImagesAsBase64(html, dirPath) {
+  return html.replace(/<img\s+[^>]*src="([^"]+)"[^>]*>/g, (match, src) => {
+    try {
+      const imgPath = path.join(dirPath, src);
+      if (!fs.existsSync(imgPath)) return match;
+
+      const mimeType = mime.lookup(imgPath) || 'application/octet-stream';
+      const base64 = fs.readFileSync(imgPath).toString('base64');
+      const dataUri = `data:${mimeType};base64,${base64}`;
+
+      return match.replace(src, dataUri);
+    } catch (err) {
+      console.error(`Fehler beim Einbetten des Bildes ${src}:`, err);
+      return match;
+    }
+  });
+}
 
 // Start the server
 app.listen(PORT, () => {
