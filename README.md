@@ -12,7 +12,7 @@ Der PDF-Server ist ein modular aufgebauter, containerisierbarer Microservice zur
 
 - ⚙️ **REST API** zur Annahme von Daten und Auslieferung generierter PDFs
 - 📄 **Support für mehrere Template Engines:** Handlebars, Nunjucks, LiquidJS
-- 🎨 **Individuelle Fonts** (z. B. E+H Sans) direkt eingebettet
+- 🎨 **Individuelle Fonts**  direkt eingebettet
 - 🗃️ **Admin-Oberfläche** (React) zum Testen und Verwalten von Templates
 - 🐳 **Docker- und Render.com-Deployment** vorbereitet
 - 🔒 Sicherer Datei-Upload per Multer
