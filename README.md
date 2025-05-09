@@ -107,8 +107,8 @@ Generiert ein PDF auf Basis eines Templates und JSON-Datensatzes.
 {
   "template": "donc-template.njk.html",
   "data": {
-    "assetNumber": "EH12345",
-    "customer": "Endress+Hauser"
+    "assetNumber": "TA12345",
+    "customer": "Hanse Merkur"
   }
 }
 ```
