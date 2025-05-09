@@ -11,7 +11,7 @@
     "react-scripts": "5.0.1",
     "grapesjs-preset-webpage": "^1.0.3",
     "grapesjs-plugin-forms": "^2.0.6",
-    "grapesjs-parser-postcss": "^1.0.3"    
+    "grapesjs-parser-postcss": "^1.0.3"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.14",
@@ -21,6 +21,17 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
-
