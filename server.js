@@ -172,7 +172,10 @@ async function embedFontsAsBase64(html) {
     console.warn('Fonts directory not found or unreadable:', fontsDir);
     return html.replace('{{{embeddedFontFace}}}', '');
   }
-
+  
+  console.log('Fonts directory:', fontsDir);
+  console.log('Fonts gefunden:', fontFiles);
+  
   if (fontFiles.length === 0) return html.replace('{{{embeddedFontFace}}}', '');
 
   const styles = await Promise.all(
@@ -194,6 +197,7 @@ async function embedFontsAsBase64(html) {
   );
 
   const fontStyleBlock = `<style>\n${styles.join('\n')}\n</style>`;
+  console.log('Erzeugte Styles:', fontStyleBlock.slice(0, 300)); // Vorschau
   return html.replace('{{{embeddedFontFace}}}', fontStyleBlock);
 }
 
