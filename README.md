@@ -6,7 +6,7 @@
 
 ## 🧩 Überblick
 
-Der PDF-Server ist ein modular aufgebauter, containerisierbarer Microservice zur serverseitigen PDF-Generierung. Er ermöglicht es, JSON-Daten mithilfe von HTML-Templates (Handlebars, Nunjucks oder LiquidJS) in exakt definierte PDF-Dokumente zu rendern – etwa für Dekontaminationserklärungen, Reports, Zertifikate oder Lieferscheine. Die Ausführung erfolgt performant über Puppeteer (Headless Chrome) mit speziellem Font- und Template-Handling.
+Der PDF-Server ist ein modular aufgebauter, containerisierbarer Microservice zur serverseitigen PDF-Generierung. Er ermöglicht es, JSON-Daten mithilfe von HTML-Templates (Handlebars, Nunjucks oder LiquidJS) in exakt definierte PDF-Dokumente zu rendern – etwa für Reports, Zertifikate oder Lieferscheine. Die Ausführung erfolgt performant über Puppeteer (Headless Chrome) mit speziellem Font- und Template-Handling.
 
 ## 🚀 Features
 
