@@ -19,6 +19,13 @@ const upload = multer({ dest: 'tmp/' });
 const PORT = process.env.PORT || 3000;
 const TEMPLATE_ROOT = path.join(__dirname, 'templates');
 
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsdoc = require('swagger-jsdoc');
+
+const swaggerSpec = require('./openapi/pdf-server.openapi.yaml');
+
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 // Middleware
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -35,7 +42,7 @@ const liquidEngine = new Liquid({ root: TEMPLATE_ROOT, extname: '.liquid' });
 const doncTemplateHtml = fs.readFileSync(path.join(__dirname, 'template', 'donc-template.html'), 'utf8');
 const compileDoncTemplate = handlebars.compile(doncTemplateHtml);
 
-app.post('/generate-donc', async (req, res) => {
+app.post('/api/generate/donc', async (req, res) => {
   try {
     const data = req.body;
     const html = compileDoncTemplate(data);
@@ -55,7 +62,7 @@ app.post('/generate-donc', async (req, res) => {
 });
 
 // Dynamischer Template-Endpunkt
-app.post('/generate/:templateName', async (req, res) => {
+app.post('/api/generate/:templateName', async (req, res) => {
   const { templateName } = req.params;
   const data = req.body;
   const dirPath = path.join(TEMPLATE_ROOT, templateName);
@@ -99,7 +106,7 @@ console.log('HTML: ',htmlWithEmbeddedImages.substring(0,1000));
 });
 
 // Template-Upload (ZIP) & Entpacken
-app.post('/api/upload-template', upload.single('templateZip'), async (req, res) => {
+app.post('/api/templates/upload', upload.single('templateZip'), async (req, res) => {
   const file = req.file;
   const templateName = req.body.templateName;
 

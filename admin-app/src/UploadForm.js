@@ -17,7 +17,7 @@ export default function UploadForm() {
     formData.append('templateZip', file);
     formData.append('templateName', templateName);
 
-    const res = await fetch('/api/upload-template', {
+    const res = await fetch('/api/templates/upload', {
       method: 'POST',
       body: formData
     });

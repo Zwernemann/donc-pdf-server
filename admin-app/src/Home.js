@@ -18,7 +18,7 @@ export default function Home() {
   };
 
   const handleGenerate = async () => {
-    const response = await fetch(`/generate/${template}`, {
+    const response = await fetch(`/api/generate/${template}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: json
