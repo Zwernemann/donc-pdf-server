@@ -8,8 +8,10 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
 
-    "install-admin": "if [ -d \"admin-app\" ]; then cd admin-app && npm install; else echo 'admin-app missing, skipping install'; fi",
-    "build-admin": "if [ -d \"admin-app\" ]; then cd admin-app && npm run build; else echo 'admin-app missing, skipping build'; fi",
+    "install-admin": "node -e \"const fs = require('fs'); const { execSync } = require('child_process'); if (fs.existsSync('admin-app')) { execSync('cd admin-app && npm install', { stdio: 'inherit' }); } else { console.log('admin-app missing, skipping install'); }\"",
+    
+    "build-admin": "node -e \"const fs = require('fs'); const { execSync } = require('child_process'); if (fs.existsSync('admin-app')) { execSync('cd admin-app && npm run build', { stdio: 'inherit' }); } else { console.log('admin-app missing, skipping build'); }\"",
+    
     "build": "npm run install-admin && npm run build-admin && npm install"
   },
   "dependencies": {
@@ -23,10 +25,10 @@
     "adm-zip": "^0.5.10",
     "mime-types": "^2.1.35"
   },
-  "engines": {
-    "node": ">=18.0.0"
-  },
   "devDependencies": {
     "nodemon": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
