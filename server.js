@@ -69,11 +69,15 @@ app.post('/generate/:templateName', async (req, res) => {
     if (!htmlFile) return res.status(404).send('No HTML file found in template directory');
 
 const templateHtml = fs.readFileSync(path.join(dirPath, htmlFile), 'utf8');
+const embeddedFontFace = await embedFontsAsBase64();    
 const compile = handlebars.compile(templateHtml);
-const html = compile(data);
+const html = compile({
+  ...data,               // bestehende Daten
+  embeddedFontFace       // zusätzlicher Key
+});
 
-const htmlWithFonts = await embedFontsAsBase64(html);
-const htmlWithEmbeddedImages = await embedImagesAsBase64(htmlWithFonts, dirPath);
+
+const htmlWithEmbeddedImages = await embedImagesAsBase64(html, dirPath);
 console.log('Fertiges HTML:', htmlWithEmbeddedImages);
 const browser = await puppeteer.launch({
   headless: 'new',
@@ -161,8 +165,8 @@ async function embedImagesAsBase64(html, dirPath) {
  * @param {string} html - Das bereits gerenderte HTML
  * @returns {Promise<string>} - HTML mit eingebetteten Fonts
  */
-async function embedFontsAsBase64(html) {
-  const fontsDir = path.join(__dirname, 'fonts'); // fest definiert
+async function embedFontsAsBase64() {
+  const fontsDir = path.join(__dirname, 'fonts');
   let fontFiles = [];
 
   try {
@@ -170,13 +174,10 @@ async function embedFontsAsBase64(html) {
       .filter(f => f.match(/\.(ttf|woff2?|otf)$/i));
   } catch (err) {
     console.warn('Fonts directory not found or unreadable:', fontsDir);
-    return html.replace('{{{embeddedFontFace}}}', '');
+    return '';
   }
-  
-  console.log('Fonts directory:', fontsDir);
-  console.log('Fonts gefunden:', fontFiles);
-  
-  if (fontFiles.length === 0) return html.replace('{{{embeddedFontFace}}}', '');
+
+  if (fontFiles.length === 0) return '';
 
   const styles = await Promise.all(
     fontFiles.map(async (filename) => {
@@ -196,10 +197,9 @@ async function embedFontsAsBase64(html) {
     })
   );
 
-  const fontStyleBlock = `<style>\n${styles.join('\n')}\n</style>`;
-  console.log('Erzeugte Styles:', fontStyleBlock.slice(0, 300)); // Vorschau
-  return html.replace('{{{embeddedFontFace}}}', fontStyleBlock);
+  return `<style>\n${styles.join('\n')}\n</style>`;
 }
+
 
 
 // Start the server
