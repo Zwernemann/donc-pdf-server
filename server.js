@@ -204,5 +204,5 @@ async function embedFontsAsBase64() {
 
 // Start the server
 app.listen(PORT, () => {
-  console.log(`PDF2025b generation server running on port ${PORT}`);
+  console.log(`PDF2025d generation server running on port ${PORT}`);
 });
