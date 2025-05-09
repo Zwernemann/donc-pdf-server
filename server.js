@@ -22,7 +22,9 @@ const TEMPLATE_ROOT = path.join(__dirname, 'templates');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 
-const swaggerSpec = require('./openapi/pdf-server.openapi.yaml');
+const yaml = require('js-yaml');
+const swaggerSpec = yaml.load(fs.readFileSync(path.join(__dirname, 'openapi', 'pdf-server.openapi.yaml'), 'utf8'));
+
 
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

@@ -29,7 +29,8 @@
     "nunjucks": "^3.2.4",
     "fontkit": "^2.0.4",
     "swagger-ui-express": "^5.0.1",
-    "swagger-jsdoc": "^6.2.8"
+    "swagger-jsdoc": "^6.2.8",
+    "js-yaml": "^4.1.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.0"
