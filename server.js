@@ -157,5 +157,5 @@ app.get('/api/templates', async (req, res) => {
 
 // Server starten
 app.listen(PORT, () => {
-  console.log(`Multi-engine PDF server running on port ${PORT}`);
+  console.log(`PDF2025d generation server running on port ${PORT}`);
 });
