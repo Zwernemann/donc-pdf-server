@@ -7,6 +7,9 @@ pnpm-debug.log*
 package-lock.json
 .pnpm-debug.log
 
+# Ausschluss des Templates-Ordners
+/templates/
+
 # Puppeteer: Chromium-Cache & temporäre Dateien
 .cache/
 .local-chromium/
