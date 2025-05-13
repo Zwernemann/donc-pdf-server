@@ -61,5 +61,5 @@ coverage/
 *.lcov
 
 # Umgebungsvariablen
-.env
+
 .env.*
