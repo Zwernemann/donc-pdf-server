@@ -18,13 +18,6 @@ const app = express();
 const upload = multer({ dest: 'tmp/' });
 const PORT = process.env.PORT || 3000;
 const TEMPLATE_ROOT = path.join(__dirname, 'templates');
-// ─────────────────────────────────────────────────────────────
-// Preprocessing: Wandelt [[...]] in {{...}} für Editor-Kompatibilität
-// ─────────────────────────────────────────────────────────────
-function convertDoubleBracketsToHandlebars(templateHtml) {
-  return templateHtml.replace(/\[\[(.*?)\]\]/g, '{{$1}}');
-}
-
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
@@ -34,9 +27,6 @@ const swaggerSpec = yaml.load(fs.readFileSync(path.join(__dirname, 'openapi', 'p
 
 
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-// Statische Pfade für Template-Assets (z. B. logo.svg in templates/X/)
-app.use('/templates', express.static(path.join(__dirname, 'templates')));
 
 // Middleware
 app.use(bodyParser.json({ limit: '10mb' }));
@@ -52,7 +42,7 @@ const liquidEngine = new Liquid({ root: TEMPLATE_ROOT, extname: '.liquid' });
 
 // Standard-DONC-Route (Handlebars only)
 const doncTemplateHtml = fs.readFileSync(path.join(__dirname, 'template', 'donc-template.html'), 'utf8');
-const compileDoncTemplate = handlebars.compile(convertDoubleBracketsToHandlebars(doncTemplateHtml));
+const compileDoncTemplate = handlebars.compile(doncTemplateHtml);
 
 app.post('/api/generate/donc', async (req, res) => {
   try {
@@ -91,7 +81,7 @@ app.post('/api/generate/:templateName', async (req, res) => {
 
     let html;
     if (engine === 'handlebars') {
-      const compile = handlebars.compile(convertDoubleBracketsToHandlebars(templateHtml));
+      const compile = handlebars.compile(templateHtml);
       html = compile({ ...data, embeddedFontFace });
     } else if (engine === 'nunjucks') {
       html = nunjucks.renderString(templateHtml, { ...data, embeddedFontFace });
@@ -140,52 +130,6 @@ app.post('/api/templates/upload', upload.single('templateZip'), async (req, res)
     res.status(500).json({ error: 'Upload failed' });
   }
 });
-
-app.get('/api/template/:templateName', async (req, res) => {
-  const { templateName } = req.params;
-  const dirPath = path.join(TEMPLATE_ROOT, templateName);
-
-  try {
-    const files = await fs.promises.readdir(dirPath);
-    const supportedExtensions = ['.hbs', '.handlebars', '.njk', '.nunjucks', '.liquid'];
-    const htmlFile = files.find(f => supportedExtensions.includes(path.extname(f).toLowerCase()));
-
-    if (!htmlFile) return res.status(404).json({ error: 'No HTML template found' });
-
-    let content = await fs.promises.readFile(path.join(dirPath, htmlFile), 'utf8');
-
-    // Nur <img src="..."> korrigieren, keine Klammern!
-    content = content.replace(/src="([^"]+)"/g, (match, src) => {
-      if (src.startsWith('http') || src.startsWith('/') || src.startsWith('data:')) return match;
-      return `src="/templates/${templateName}/${src}"`;
-    });
-
-    res.json({ filename: htmlFile, content });
-  } catch (err) {
-    console.error('Fehler beim Laden des Templates:', err);
-    res.status(500).json({ error: 'Fehler beim Laden des Templates' });
-  }
-});
-
-app.post('/api/template/:templateName', async (req, res) => {
-  const { templateName } = req.params;
-  const { content, filename } = req.body;
-
-  if (!filename) return res.status(400).json({ error: 'filename missing' });
-
-  const dirPath = path.join(TEMPLATE_ROOT, templateName);
-  const filePath = path.join(dirPath, filename);
-
-  try {
-    await fs.promises.writeFile(filePath, content, 'utf8');
-    res.status(200).json({ status: 'saved', file: filename });
-  } catch (err) {
-    console.error('Fehler beim Speichern des Templates:', err);
-    res.status(500).json({ error: 'Fehler beim Speichern' });
-  }
-});
-
-
 
 // API: Liste verfügbarer Templates
 app.get('/api/templates', async (req, res) => {

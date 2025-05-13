@@ -11,7 +11,10 @@
     "react-scripts": "5.0.1",
     "grapesjs-preset-webpage": "^1.0.3",
     "grapesjs-plugin-forms": "^2.0.6",
-    "grapesjs-parser-postcss": "^1.0.3"
+    "grapesjs-parser-postcss": "^1.0.3",
+    "monaco-editor": "^0.52.2",
+    "@monaco-editor/react": "^4.7.0"
+  
   },
   "devDependencies": {
     "autoprefixer": "^10.4.14",
