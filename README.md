@@ -1,194 +1,142 @@
 
-# PDF Server
+# 📄 PDF-Server – Dynamische PDF-Erzeugung aus HTML-Templates
 
-**Skalierbarer Node.js-basierter Microservice zur dynamischen PDF-Erzeugung aus HTML-, Handlebars-, Nunjucks- und LiquidJS-Vorlagen**  
-**by Zwernemann Medienentwicklung**
+Ein leistungsfähiger Node.js-Service zur serverseitigen PDF-Erzeugung aus HTML-Templates. Unterstützt mehrere Template-Engines (Handlebars, Liquid, Nunjucks) und bietet ein React-Frontend zur Verwaltung, Vorschau und Pflege von Vorlagen.
 
-## 🧩 Überblick
+---
 
-Der PDF-Server ist ein modular aufgebauter, containerisierbarer Microservice zur serverseitigen PDF-Generierung. Er ermöglicht es, JSON-Daten mithilfe von HTML-Templates (Handlebars, Nunjucks oder LiquidJS) in exakt definierte PDF-Dokumente zu rendern – etwa für Reports, Zertifikate oder Lieferscheine. Die Ausführung erfolgt performant über Puppeteer (Headless Chrome) mit speziellem Font- und Template-Handling.
+## 🚀 Highlights
 
-## 🚀 Features
+- 🧠 **Multi-Engine Support**: Handlebars, Liquid, Nunjucks
+- 🖋️ **Templating via JSON oder ZIP**
+- 🌐 **REST-API mit Endpunkten zur Verwaltung und Generierung**
+- 🧪 **Web-Frontend** zum Testen und Hochladen von Templates
+- 🔐 **CORS und Umgebungsvariablen** via `.env`
+- 🐳 **Docker- und Cloud-ready** (z. B. Render, Heroku)
 
-- ⚙️ **REST API** zur Annahme von Daten und Auslieferung generierter PDFs
-- 📄 **Support für mehrere Template Engines:** Handlebars, Nunjucks, LiquidJS
-- 🎨 **Individuelle Fonts**  direkt eingebettet
-- 🗃️ **Admin-Oberfläche** (React) zum Testen und Verwalten von Templates
-- 🐳 **Docker- und Render.com-Deployment** vorbereitet
-- 🔒 Sicherer Datei-Upload per Multer
-- 🔁 Unterstützung für ZIP-Archive mit Templates
-- 📁 Trennung zwischen statischen `template/`- und runtime-generierten `templates/`-Verzeichnissen
+---
 
-## 📂 Projektstruktur
+## 🗂️ Projektstruktur
 
 ```plaintext
-pdf-server/
-│
-├── server.js               # Hauptserver für PDF-Generierung (Express + Puppeteer)
-├── package.json            # Serverseitige Dependencies
-├── admin-app/              # React-basierte Admin UI
-├── template/               # Beispiel-Template mit HTML & JSON
-├── templates/              # Dynamisch hochgeladene Templates
-├── fonts/                  # Eingebettete TrueType-Fonts (E+H)
-├── .github/workflows/     # CI/CD Pipeline (Render.com)
-├── Dockerfile              # Production-Image für Container-Deployments
-├── render.yaml             # Render.com Config File
-└── README.md               # Diese Datei
+.
+├── server.js                    # Haupt-Express-Server
+├── admin.js                    # Admin-Router
+├── templates/                  # Template-Verzeichnis (HTML, Assets, JSON)
+├── fonts/                      # Schriftartenverzeichnis
+├── admin-app/                  # React-Frontend
+├── openapi/pdf-server.openapi.yaml # API-Spezifikation
+├── .env                        # Umgebungsvariablen
+└── render.yaml / Dockerfile    # Deployment-Konfigurationen
 ```
 
-## 🛠️ Technologie-Stack
+---
 
-| Bereich            | Technologie                                |
-|--------------------|---------------------------------------------|
-| Backend            | Node.js (Express)                          |
-| PDF-Engine         | Puppeteer (Headless Chromium)              |
-| Template Engines   | Handlebars, Nunjucks, LiquidJS             |
-| Uploads            | Multer                                     |
-| Frontend (Admin)   | React + TailwindCSS                        |
-| Deployment         | Docker, Render.com                         |
-| Schriftarten       | TrueType (TTF), eingebettet als Base64     |
-| CI/CD              | GitHub Actions                             |
-
-## 📐 Template-System
-
-Der PDF-Server unterstützt drei populäre Templating-Systeme:
-
-| Engine      | Syntaxstil                        | Dateiendung    | Besondere Merkmale                            |
-|-------------|------------------------------------|----------------|-----------------------------------------------|
-| Handlebars  | `{{variable}}`                     | `.hbs.html`    | Logikarm, ideal für simple Placeholder         |
-| Nunjucks    | `{% block %}`, `{{ var }}`         | `.njk.html`    | mächtiger Jinja2-ähnlicher Syntax              |
-| LiquidJS    | `{{ variable }}`, `{% if %}`       | `.liquid.html` | Shopify-kompatibel, sicher und populär im Web |
-
-**Automatische Erkennung:** Die Engine wird anhand der Dateiendung des Templates erkannt. Beispiel:
-
-```json
-{
-  "template": "zertifikat.njk.html",
-  "data": { ... }
-}
-```
-
-## 🔧 Lokale Entwicklung
-
-### Voraussetzungen
-
-- Node.js ≥ 18
-- npm
-- Docker (optional)
-- Git
-
-### Setup
+## ⚙️ Setup
 
 ```bash
 git clone https://github.com/Zwernemann/pdf-server.git
 cd pdf-server
 npm install
-```
-
-### Starten des Servers
-
-```bash
+cp .env.example .env
 npm start
 ```
 
-Der Server lauscht standardmäßig auf Port `3000`.
-
-## 🌐 API-Endpunkte
-
-### `POST /generate`
-
-Generiert ein PDF auf Basis eines Templates und JSON-Datensatzes.
-
-**Header:**
-- `Content-Type: application/json`
-
-**Body-Beispiel:**
-```json
-{
-  "template": "donc-template.njk.html",
-  "data": {
-    "assetNumber": "TA12345",
-    "customer": "Hanse Merkur"
-  }
-}
-```
-
-**Antwort:**
-PDF-Datei im MIME-Typ `application/pdf`.
-
-## 🧪 Admin-Oberfläche
-
-Pfad: `/admin`
-
-Features:
-- Template-Upload via ZIP
-- JSON-Payloads testen
-- Live-PDF-Vorschau (im Browser)
-- Re-Upload von Fonts/Templates
-
-### Admin-App separat starten (optional)
-
+Admin-Frontend starten:
 ```bash
 cd admin-app
 npm install
-npm start
+npm run dev
 ```
 
-Für Production ist die App bereits vorgebaut im `build/`-Ordner eingebunden.
+---
 
-## 🐳 Docker Deployment
+## 📬 API-Endpunkte
+
+### `GET /api/templates`
+→ Liste aller verfügbaren Templates
+
+### `GET /api/template/{templateName}`
+→ Gibt den Inhalt eines Templates zurück
+
+### `POST /api/template/{templateName}`
+→ Speichert oder überschreibt ein Template
+
+### `POST /api/templates/upload`
+→ Upload eines neuen Templates (ZIP, HTML, JSON)
+
+### `POST /api/generate/{templateName}`
+→ Generiert ein PDF anhand des Templates und der übermittelten JSON-Daten
+
+### `POST /api/generate/donc`
+→ Spezieller Generator für "Declaration of Non-Contamination" PDFs
+
+---
+
+## 📄 Beispielaufruf (cURL)
 
 ```bash
-docker build -t pdf-server .
-docker run -p 3000:3000 pdf-server
+curl -X POST http://localhost:3000/api/generate/green/template.handlebars \
+     -H "Content-Type: application/json" \
+     -d '{
+           "data": {
+             "title": "Dekontaminationserklärung",
+             "flammable": true
+           }
+         }' --output output.pdf
 ```
 
-### Mit Render.com
+---
 
-Bereits vorbereitet durch:
-- `Dockerfile`
-- `render.yaml`
-- GitHub Actions Workflow
+## 🧠 Templates
 
-Push auf `main` → automatisch deploybar über Render.
+Unterstützt:
+- `.handlebars` (via Handlebars)
+- `.liquid` (via LiquidJS)
+- `.njk` (via Nunjucks)
 
-## 📦 Template-Pakete
+---
 
-Du kannst eigene Templates als `.zip` hochladen, die folgende Struktur enthalten:
+## 🌍 .env-Beispiel
 
-```
-template-name.zip
-├── template.njk.html
-├── data.json
-├── logo.svg
-└── styles.css
+```dotenv
+PORT=3000
+TEMPLATE_ROOT=./templates
+ALLOWED_CORS_ORIGINS=http://localhost:3000,http://localhost:5173
 ```
 
-Nach Upload steht das Template sofort über `/generate` zur Verfügung.
+---
 
-## 🔐 Sicherheit
+## 🛠 Deployment
 
-- Input-Sanitization auf Pfade und Dateinamen
-- Limitiertes `bodyParser`-Limit (10MB)
-- Helm für HTTP-Header-Härtung (optional nachrüstbar)
-- TODO: JWT-/API-Key-Schutz für `/admin`
+Bereit für Cloud-Plattformen:
+- Docker: `docker build -t pdf-server .`
+- Render.com mit `render.yaml`
+- Heroku über `Procfile`
 
-## 📚 Weiterentwicklungsideen
+---
 
-- [ ] Template-Versionsverwaltung mit Git
-- [ ] Benutzerrollen im Adminbereich
-- [ ] Mehrsprachige PDF-Generierung aus JSON-Keys
-- [ ] WebSocket-basiertes Preview-Modul
-- [ ] Font-Serving als Webservice statt Base64-Einbettung
+## 🧪 Admin-Frontend
 
-## ✨ Autor
+React-App zur lokalen Template-Verwaltung:
+- Live-Vorschau
+- Hochladen von Templates und JSON
+- Editor mit Syntax-Highlighting
 
-**Zwernemann Medienentwicklung**  
-Individuelle Reporting-Lösungen für Salesforce, SAP, B2B-Portale und Embedded-Systeme.
+Erreichbar unter: `http://localhost:3000/admin`
 
-> Kontakt: martin@zwernemann.de  
-> Web: [www.zwernemann.de](https://www.zwernemann.de)
+---
+
+## 📘 API-Spezifikation
+
+Die vollständige API ist in `openapi/pdf-server.openapi.yaml` dokumentiert.  
+Importiere sie direkt in Swagger UI oder Postman.
+
+---
 
 ## 📄 Lizenz
 
-MIT License – feel free to use, modify, and contribute.
+MIT License – frei nutzbar. Attribution willkommen.
+
+> © © Zwernemann Medienentwicklung – powered by Reporting Know-How und Liebe zum Pixel.
+

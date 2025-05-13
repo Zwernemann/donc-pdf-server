@@ -32,7 +32,8 @@
     "swagger-jsdoc": "^6.2.8",
     "js-yaml": "^4.1.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.5" 
+    "dotenv": "^16.4.5",
+    "sanitize-html": "^2.13.0" 
   },
   "devDependencies": {
     "nodemon": "^3.0.0"

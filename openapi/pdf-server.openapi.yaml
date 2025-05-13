@@ -1,86 +1,126 @@
+
 openapi: 3.0.0
 info:
-  title: PDF Generator API
-  version: 1.0.0
-  description: API zur Generierung von PDF-Dokumenten aus HTML-Templates mit Handlebars, Nunjucks oder Liquid.
+  title: PDF Server API
+  description: Vollständige API zur PDF-Erzeugung mit Template-Engines
+  version: "1.0.0"
 servers:
-  - url: http://localhost:3000/api
-    description: Lokaler Entwicklungsserver
+  - url: http://localhost:3000
+    description: Lokale Entwicklungsumgebung
 
 paths:
-  /generate/donc:
-    post:
-      summary: Generiert eine DONC-PDF mit Handlebars-Template
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              example:
-                name: Max Mustermann
-                date: "2025-05-09"
-      responses:
-        200:
-          description: Erfolgreiche PDF-Rückgabe
-          content:
-            application/pdf:
-              schema:
-                type: string
-                format: binary
-        500:
-          description: Fehler bei der PDF-Erstellung
-
-  /generate/{templateName}:
-    post:
-      summary: Generiert ein PDF aus einem dynamischen Template (Handlebars, Nunjucks, Liquid)
-      parameters:
-        - name: templateName
-          in: path
-          required: true
-          schema:
-            type: string
-          description: Der Name des Template-Verzeichnisses
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              additionalProperties: true
-      responses:
-        200:
-          description: Erfolgreiche PDF-Rückgabe
-          content:
-            application/pdf:
-              schema:
-                type: string
-                format: binary
-        400:
-          description: Ungültige Template-Engine
-        404:
-          description: Template nicht gefunden
-        500:
-          description: Fehler bei der PDF-Erstellung
-
-  /templates:
+  /api/templates:
     get:
-      summary: Gibt eine Liste der verfügbaren Templates zurück
+      summary: Liste aller verfügbaren Templates
       responses:
-        200:
-          description: Erfolgreiche Rückgabe der Template-Namen
+        '200':
+          description: JSON-Array mit Template-Namen
           content:
             application/json:
               schema:
                 type: array
                 items:
                   type: string
-        500:
-          description: Fehler beim Lesen der Template-Liste
 
-  /templates/upload:
+  /api/template/{templateName}:
+    get:
+      summary: Ruft ein bestimmtes Template ab
+      parameters:
+        - name: templateName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Inhalt des Templates
+          content:
+            text/plain:
+              schema:
+                type: string
+        '404':
+          description: Template nicht gefunden
+
     post:
-      summary: Upload eines ZIP-Templates
+      summary: Überschreibt ein bestehendes Template
+      parameters:
+        - name: templateName
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Template erfolgreich gespeichert
+        '400':
+          description: Fehlerhafte Eingabe
+
+  /api/generate/{templateName}:
+    post:
+      summary: Generiert ein PDF auf Basis eines Template-Namens
+      parameters:
+        - name: templateName
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  description: JSON-Daten für das Template
+      responses:
+        '200':
+          description: Erfolgreich generiertes PDF
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Fehlerhafte Anfrage
+
+  /api/generate/donc:
+    post:
+      summary: Spezialisierter Endpunkt für DONC-PDFs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                assetId:
+                  type: string
+                returnOrderId:
+                  type: string
+                contactId:
+                  type: string
+      responses:
+        '200':
+          description: DONC-PDF erfolgreich erstellt
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Fehlerhafte Anfrage
+
+  /api/templates/upload:
+    post:
+      summary: Upload eines neuen Templates (ZIP oder HTML+JSON)
       requestBody:
         required: true
         content:
@@ -88,24 +128,16 @@ paths:
             schema:
               type: object
               properties:
-                templateZip:
+                template:
                   type: string
                   format: binary
-                templateName:
+                data:
                   type: string
+                  format: binary
       responses:
-        200:
-          description: Erfolgreicher Upload
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                  path:
-                    type: string
-        400:
-          description: Fehlende Datei oder Template-Name
-        500:
-          description: Fehler beim Entpacken des ZIP-Archivs
+        '200':
+          description: Template erfolgreich hochgeladen
+        '400':
+          description: Fehlerhafter Upload
+
+components: {}
