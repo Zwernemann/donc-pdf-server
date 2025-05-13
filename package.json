@@ -30,7 +30,9 @@
     "fontkit": "^2.0.4",
     "swagger-ui-express": "^5.0.1",
     "swagger-jsdoc": "^6.2.8",
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5" // Neu: Umgebungsvariablen
   },
   "devDependencies": {
     "nodemon": "^3.0.0"

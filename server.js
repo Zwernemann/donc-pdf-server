@@ -13,11 +13,39 @@ const { Liquid } = require('liquidjs');
 const AdmZip = require('adm-zip');
 const mime = require('mime-types');
 const fontkit = require('fontkit');
+const cors = require('cors'); // Neu: CORS importieren
+require('dotenv').config(); // Umgebungsvariablen laden
 
 const app = express();
 const upload = multer({ dest: 'tmp/' });
 const PORT = process.env.PORT || 3000;
 const TEMPLATE_ROOT = path.join(__dirname, 'templates');
+// CORS-Konfiguration: Alle Origins aus .env
+const allowedOrigins = process.env.ALLOWED_CORS_ORIGINS
+  ? process.env.ALLOWED_CORS_ORIGINS.split(',').map(origin => {
+      const escapedOrigin = origin.replace('.', '\\.');
+      return new RegExp(`^${escapedOrigin}(:\\d+)?$`);
+    })
+  : (() => {
+      console.warn('WARNING: ALLOWED_CORS_ORIGINS not set in .env. No origins allowed except non-browser requests.');
+      return [];
+    })();
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    const isAllowed = allowedOrigins.some(allowed => allowed.test(origin));
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      console.warn(`CORS policy: Blocked origin ${origin}`);
+      callback(new Error(`CORS policy: Origin ${origin} not allowed`));
+    }
+  },
+  methods: ['GET', 'POST', 'OPTIONS'], // Neu: OPTIONS hinzufügen
+  credentials: true
+}));
+
 // ─────────────────────────────────────────────────────────────
 // Preprocessing: Wandelt [[...]] in {{...}} für Editor-Kompatibilität
 // ─────────────────────────────────────────────────────────────
