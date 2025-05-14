@@ -138,5 +138,5 @@ Importiere sie direkt in Swagger UI oder Postman.
 
 MIT License – frei nutzbar. Attribution willkommen.
 
-> © © Zwernemann Medienentwicklung – powered by Reporting Know-How und Liebe zum Pixel.
+> © Zwernemann Medienentwicklung – powered by Reporting Know-How und Liebe zum Pixel.
 

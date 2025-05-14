@@ -53,6 +53,7 @@ function convertDoubleBracketsToHandlebars(templateHtml) {
   return templateHtml.replace(/\[\[(.*?)\]\]/g, '{{$1}}');
 }
 
+app.use(express.static(path.join(__dirname, 'admin-app', 'build')));
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
@@ -120,7 +121,8 @@ app.post('/api/generate/:templateName', async (req, res) => {
     let html;
     if (engine === 'handlebars') {
       const compile = handlebars.compile(convertDoubleBracketsToHandlebars(templateHtml));
-      html = compile({ ...data, embeddedFontFace });
+      const chartConfigs = JSON.stringify(data.chartConfigs || []);
+      html = compile({ ...data, embeddedFontFace, chartConfigs });
     } else if (engine === 'nunjucks') {
       html = nunjucks.renderString(templateHtml, { ...data, embeddedFontFace });
     } else if (engine === 'liquid') {
@@ -298,6 +300,12 @@ function getTemplateEngineByExtension(filename) {
   if (ext === '.liquid') return 'liquid';
   return null;
 }
+
+app.get('*', (req, res, next) => {
+  const ignored = ['/api', '/openapi', '/templates', '/fonts'];
+  if (ignored.some(prefix => req.path.startsWith(prefix))) return next();
+  res.sendFile(path.join(__dirname, 'admin-app', 'build', 'index.html'));
+});
 
 // Serverstart
 app.listen(PORT, () => {
